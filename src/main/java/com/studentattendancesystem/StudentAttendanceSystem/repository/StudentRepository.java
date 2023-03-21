@@ -15,6 +15,4 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Query(value = "SELECT t.id as id, t. first_name as firstName, t.department as department, t.gender as gender FROM teacher t JOIN student_teacher st ON t.id = st.teacher_id WHERE st.student_id = ?1", nativeQuery = true)
     List<TeacherInterface> findTeachersByStudentId(int studentId);
-
-    Student findStudentById(int id);
 }
