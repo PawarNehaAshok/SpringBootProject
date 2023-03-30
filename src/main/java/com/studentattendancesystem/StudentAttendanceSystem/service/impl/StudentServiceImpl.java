@@ -1,6 +1,5 @@
 package com.studentattendancesystem.StudentAttendanceSystem.service.impl;
 
-import com.studentattendancesystem.StudentAttendanceSystem.response.ResponseHandler;
 import com.studentattendancesystem.StudentAttendanceSystem.dto.PageDTO;
 import com.studentattendancesystem.StudentAttendanceSystem.dto.StudentDto;
 import com.studentattendancesystem.StudentAttendanceSystem.dto.StudentResponseDTO;
@@ -8,13 +7,16 @@ import com.studentattendancesystem.StudentAttendanceSystem.dto.TeacherInterface;
 import com.studentattendancesystem.StudentAttendanceSystem.mapper.AutoMapper;
 import com.studentattendancesystem.StudentAttendanceSystem.model.Student;
 import com.studentattendancesystem.StudentAttendanceSystem.repository.StudentRepository;
+import com.studentattendancesystem.StudentAttendanceSystem.response.ResponseHandler;
 import com.studentattendancesystem.StudentAttendanceSystem.service.StudentService;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static com.studentattendancesystem.StudentAttendanceSystem.model.ResponseMessages.*;
 
@@ -49,8 +50,9 @@ public class StudentServiceImpl implements StudentService {
                 return ResponseHandler.response(STUDENT_DATA_EXISTS.getMessage(), HttpStatus.CONFLICT, null);
             }
         }
-        studentRepository.save(student);
-        return ResponseHandler.response(STUDENT_CREATED.getMessage(), HttpStatus.CREATED, studentDto);
+        student = studentRepository.save(student);
+        StudentDto insertedStudentDto = AutoMapper.MAPPER.mapToStudentDto(student);
+        return ResponseHandler.response(STUDENT_CREATED.getMessage(), HttpStatus.CREATED, insertedStudentDto);
     }
 
     @Override
@@ -62,7 +64,10 @@ public class StudentServiceImpl implements StudentService {
         Page<Student> studentPage = studentRepository.findAll(PageRequest.of(offset, pageSize, Sort.by("id").ascending()));
 
         List<StudentDto> students = AutoMapper.MAPPER.mapToStudentDtoList(studentPage.getContent());
-        PageDTO pageDTO = AutoMapper.MAPPER.mapToPageDTO(studentPage, studentPage.getPageable());
+        PageDTO pageDTO= new PageDTO();
+        pageDTO.setSize(offset);
+        pageDTO.setPage(pageSize);
+        pageDTO.setTotalElements(studentPage.getTotalElements());
         StudentResponseDTO studentResponseDTO = AutoMapper.MAPPER.mapToStudentResponseDTO(pageDTO, students);
 
         session.disableFilter("deletedStudentFilter");
@@ -129,7 +134,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     public boolean checkEmailFormat(String emailId) {
-        Predicate<String> emailFilter = Pattern.compile("[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}").asPredicate();
+        Predicate<String> emailFilter = emailStr -> emailStr.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
         return emailFilter.test(emailId);
     }
 }

@@ -22,4 +22,9 @@ public class StudentResponseDTO {
     public void setStudentList(List<StudentDto> studentList) {
         this.studentList = studentList;
     }
+
+    public StudentResponseDTO(PageDTO metaInfo, List<StudentDto> studentList) {
+        this.metaInfo = metaInfo;
+        this.studentList = studentList;
+    }
 }

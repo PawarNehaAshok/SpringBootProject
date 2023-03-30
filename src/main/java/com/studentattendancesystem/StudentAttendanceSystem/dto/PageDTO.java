@@ -6,6 +6,7 @@ public class PageDTO {
     int size;
     long totalElements;
 
+    public PageDTO(){}
     public PageDTO(long offset, int pageSize, long totalElements) {
     }
 

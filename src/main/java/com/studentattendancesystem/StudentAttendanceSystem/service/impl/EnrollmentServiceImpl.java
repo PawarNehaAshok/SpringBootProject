@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.studentattendancesystem.StudentAttendanceSystem.model.ResponseMessages.*;
@@ -34,7 +33,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public ResponseEntity<Object> enrollStudent(int studentId, int teacherId) {
         List<TeacherInterface> teacherList = studentRepository.findTeachersByStudentId(studentId);
-        if (Objects.isNull(teacherList)) {
+        if (teacherList.isEmpty()) {
             return ResponseHandler.response(NO_DATA_FOUND.getMessage(), HttpStatus.NOT_FOUND, null);
         }
         if (teacherList.size() < teacherMaxValue) {
