@@ -44,7 +44,10 @@ public class TeacherServiceImpl implements TeacherService {
         Page<Teacher> teacherPage = teacherRepository.findAll(PageRequest.of(offset, pageSize));
         if (ObjectUtils.isNotEmpty(teacherPage)) {
             List<TeacherDto> teachers = AutoMapper.MAPPER.mapToTeacherDtoList(teacherPage.getContent());
-            PageDTO pageDTO = AutoMapper.MAPPER.mapToPageDTO(teacherPage, teacherPage.getPageable());
+            PageDTO pageDTO= new PageDTO();
+            pageDTO.setSize(offset);
+            pageDTO.setPage(pageSize);
+            pageDTO.setTotalElements(teacherPage.getTotalElements());
             TeacherResponseDTO teacherResponseDTO = AutoMapper.MAPPER.mapToTeacherResponseDTO(pageDTO, teachers);
             return ResponseHandler.response(DATA_RETRIEVED.getMessage(), HttpStatus.OK, teacherResponseDTO);
         }

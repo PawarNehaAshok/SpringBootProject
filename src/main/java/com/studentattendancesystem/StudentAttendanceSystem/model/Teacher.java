@@ -1,5 +1,6 @@
 package com.studentattendancesystem.StudentAttendanceSystem.model;
 
+import com.studentattendancesystem.StudentAttendanceSystem.dto.TeacherInterface;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table
 @Data
-public class Teacher {
+public class Teacher implements TeacherInterface {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
